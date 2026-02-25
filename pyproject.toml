@@ -1,0 +1,18 @@
+[project]
+name = "minicortex"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.131.0",
+    "ipynotebook>=0.1.0",
+    "ipywidgets>=8.1.8",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.2",
+    "pygame>=2.6.1",
+    "python-mnist>=0.7",
+    "python-multipart>=0.0.22",
+    "scikit-learn>=1.8.0",
+    "uvicorn[standard]>=0.41.0",
+]

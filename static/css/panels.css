@@ -1,0 +1,182 @@
+/**
+ * MiniCortex - Panels Styles
+ * 
+ * Properties panel and node actions styling.
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Node Properties
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.node-properties {
+    padding: 0.1rem 0;
+}
+
+.property-group {
+    margin-bottom: 0.25rem;
+}
+
+.property-group:last-child {
+    margin-bottom: 0;
+}
+
+.property-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.1rem;
+    font-size: 0.58rem;
+    color: var(--text-secondary);
+}
+
+.property-value {
+    font-family: 'Monaco', 'Menlo', monospace;
+    color: var(--accent);
+    font-size: 0.55rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Slider Property
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.property-slider {
+    width: 100%;
+    height: 3px;
+    border-radius: 0;
+    background: var(--bg-secondary);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.property-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 0;
+    background: var(--accent);
+    cursor: pointer;
+}
+
+.property-slider::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 0;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Integer Property
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.property-number {
+    width: 100%;
+    height: 22px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.62rem;
+    padding: 0 0.35rem;
+    border-radius: 0;
+}
+
+.property-number:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Checkbox Property
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.property-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    font-size: 0.62rem;
+}
+
+.property-checkbox .checkbox {
+    width: 12px;
+    height: 12px;
+    border-radius: 0;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.property-checkbox .checkbox.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.property-checkbox .checkbox.checked::after {
+    content: '✓';
+    color: white;
+    font-size: 8px;
+    font-weight: bold;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Radio Property
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.property-radio {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+}
+
+.property-radio .radio-option {
+    padding: 0.15rem 0.35rem;
+    border-radius: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 0.55rem;
+}
+
+.property-radio .radio-option:hover {
+    border-color: var(--accent);
+}
+
+.property-radio .radio-option.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Node Actions
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.node-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    padding: 0.15rem 0;
+    border-top: 1px solid var(--border);
+    margin-top: 0.15rem;
+    padding-top: 0.25rem;
+}
+
+.action-btn {
+    padding: 0.15rem 0.35rem;
+    border-radius: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.58rem;
+}
+
+.action-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+}

@@ -1,0 +1,250 @@
+/**
+ * MiniCortex - Node Styles
+ * 
+ * Node container, header, body, and port styling.
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Node Container
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.node {
+    position: absolute;
+    background: var(--bg-node);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    min-width: 250px;
+    box-shadow: none;
+    cursor: move;
+    user-select: none;
+}
+
+.node:hover {
+    border-color: #555;
+}
+
+.node.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Node Header
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.node-header {
+    background: var(--bg-node-header);
+    padding: 0.25rem 0.4rem;
+    border-radius: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    cursor: grab;
+}
+
+.node-header:active {
+    cursor: grabbing;
+}
+
+.node-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+/* Dynamic Node Reload Button */
+.node-reload-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.1rem 0.25rem;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.node-reload-btn:hover {
+    opacity: 1;
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.node-reload-btn:active {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Node Body
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.node-body {
+    padding: 0.3rem 0.4rem 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.node-content {
+    min-width: 0;
+}
+
+.node-io {
+    margin: -0.3rem -0.4rem 0;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.node-io-column {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.node-io-cell {
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    background: var(--bg-node);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Node Ports (Inputs/Outputs)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.node-ports {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0.25rem 0;
+}
+
+.node-ports.left {
+    margin-right: 0.5rem;
+}
+
+.node-ports.right {
+    margin-left: 0.5rem;
+}
+
+.port {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.62rem;
+    color: var(--text-secondary);
+    cursor: crosshair;
+    padding: 2px 0;
+    min-height: 18px;
+    position: relative;
+    width: 100%;
+    line-height: 1;
+}
+
+.port.input {
+    padding-left: 10px;
+    padding-right: 4px;
+    justify-content: flex-start;
+}
+
+.port.output {
+    padding-left: 4px;
+    padding-right: 10px;
+    justify-content: flex-end;
+}
+
+.port-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 0;
+    border: 1px solid;
+    background: var(--bg-node);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transform-origin: center;
+    flex-shrink: 0;
+}
+
+.port.input .port-dot {
+    left: -4px;
+    border-color: var(--input-port);
+    background: rgba(74, 222, 128, 0.2);
+}
+
+.port.output .port-dot {
+    right: -4px;
+    border-color: var(--output-port);
+    background: rgba(233, 69, 96, 0.2);
+}
+
+.port.input:hover .port-dot {
+    background: var(--input-port);
+}
+
+.port.output:hover .port-dot {
+    background: var(--output-port);
+}
+
+.port.connected.input .port-dot {
+    background: var(--input-port);
+}
+
+.port.connected.output .port-dot {
+    background: var(--output-port);
+}
+
+.port-label {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    padding: 0 1px;
+    font-size: inherit;
+    line-height: 1;
+    color: var(--text-secondary);
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.port.connected .port-label {
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.port.input .port-label {
+    text-align: left;
+}
+
+.port.output .port-label {
+    text-align: right;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Node Type Specific Styles
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.node[data-type="input_rotating_line"] .node-header,
+.node[data-type="input_scanning_square"] .node-header,
+.node[data-type="input_mnist"] .node-header,
+.node[data-type="input_fashion_mnist"] .node-header {
+    border-left: 3px solid var(--input-port);
+}
+
+.node[data-type="area"] .node-header {
+    border-left: 3px solid #60a5fa;
+}
+
+.node[data-type="add_noise"] .node-header,
+.node[data-type="invert"] .node-header,
+.node[data-type="display_grayscale"] .node-header,
+.node[data-type="display_bwr"] .node-header {
+    border-left: 3px solid var(--warning);
+}

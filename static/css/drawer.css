@@ -1,0 +1,288 @@
+/**
+ * MiniCortex - Drawer Styles
+ * 
+ * Left-side drawer with node palette and collapsible panels.
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Drawer Container
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.drawer {
+    width: var(--drawer-width);
+    background: var(--bg-drawer);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.drawer-header {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.drawer-rediscover-btn {
+    padding: 0.2rem 0.5rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 0;
+    line-height: 1;
+}
+
+.drawer-rediscover-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.drawer-rediscover-btn:active {
+    transform: scale(0.95);
+}
+
+.drawer-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.drawer-empty {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Drawer Panel
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.drawer-panel {
+    border-bottom: 1px solid var(--border);
+}
+
+.drawer-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.75rem;
+    cursor: pointer;
+    background: var(--bg-secondary);
+    user-select: none;
+    border-radius: 0;
+}
+
+.drawer-panel-header:hover {
+    background: var(--bg-node);
+}
+
+.drawer-panel-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.drawer-panel-toggle {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+}
+
+.drawer-panel.collapsed .drawer-panel-toggle {
+    transform: rotate(-90deg);
+}
+
+.drawer-panel-items {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.drawer-panel.collapsed .drawer-panel-items {
+    display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Drawer Item (draggable node template)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.drawer-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    background: var(--bg-node);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    cursor: grab;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+}
+
+.drawer-item:hover {
+    border-color: var(--accent);
+    background: var(--bg-node-header);
+}
+
+.drawer-item:active {
+    cursor: grabbing;
+}
+
+.drawer-item.dragging {
+    opacity: 0.5;
+}
+
+.drawer-item-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+.drawer-item-icon.input {
+    background: rgba(74, 222, 128, 0.2);
+    color: var(--input-port);
+}
+
+.drawer-item-icon.utility {
+    background: rgba(251, 191, 36, 0.2);
+    color: var(--warning);
+}
+
+.drawer-item-icon.processing {
+    background: rgba(233, 69, 96, 0.2);
+    color: var(--accent);
+}
+
+.drawer-item-icon.default {
+    background: rgba(136, 136, 136, 0.2);
+    color: var(--text-secondary);
+}
+
+.drawer-item-name {
+    flex: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Drag Preview (when dragging from drawer)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.drag-preview {
+    position: fixed;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-node);
+    border: 1px solid var(--accent);
+    border-radius: 0;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Workspace Panel Styles
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.workspace-save-section {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.workspace-input {
+    flex: 1;
+    padding: 0.25rem 0.5rem;
+    background: var(--bg-node);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.7rem;
+}
+
+.workspace-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.workspace-btn {
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-node);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.7rem;
+    cursor: pointer;
+}
+
+.workspace-btn:hover {
+    border-color: var(--accent);
+}
+
+.workspace-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.workspace-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.workspace-item:hover {
+    background: var(--bg-node);
+}
+
+.workspace-item-name {
+    font-size: 0.7rem;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.workspace-item-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.workspace-item-btn {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.6rem;
+    background: var(--bg-node);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.workspace-item-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.workspace-item-btn.delete:hover {
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.workspace-empty {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+}

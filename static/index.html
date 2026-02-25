@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniCortex - Node Editor</title>
+    
+    <!-- CSS Imports -->
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/drawer.css">
+    <link rel="stylesheet" href="/static/css/nodes.css">
+    <link rel="stylesheet" href="/static/css/connections.css">
+    <link rel="stylesheet" href="/static/css/panels.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/outputs.css">
+</head>
+<body>
+    <div id="app">
+        <header class="app-header">
+            <div class="header-left">
+                <h1>MiniCortex</h1>
+                <!-- Workspace Dropdown -->
+                <div class="workspace-dropdown" id="workspace-dropdown">
+                    <button class="workspace-dropdown-toggle" id="workspace-dropdown-toggle">
+                        <span class="workspace-current-name" id="workspace-current-name">Unsaved Workspace</span>
+                        <span class="workspace-dropdown-arrow">▼</span>
+                    </button>
+                    <div class="workspace-dropdown-menu" id="workspace-dropdown-menu">
+                        <div class="workspace-dropdown-header">
+                            <span>Workspaces</span>
+                            <button class="workspace-new-btn" id="workspace-new-btn" title="New Workspace">+</button>
+                        </div>
+                        <div class="workspace-dropdown-list" id="workspace-dropdown-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-controls">
+                <div class="network-controls" id="network-controls">
+                    <button class="network-toggle-btn" id="network-toggle-btn" type="button">Start</button>
+                    <button class="network-iterate-btn" id="network-iterate-btn" type="button" title="Iterate One Tick">Iterate</button>
+                    <label class="network-speed-control" for="network-speed-slider">
+                        <span class="network-speed-label">Max Hz</span>
+                        <input type="range" id="network-speed-slider" min="1" max="300" value="10">
+                        <span class="network-speed-value" id="network-speed-value">10</span>
+                        <span class="network-actual-value" id="network-actual-value">Now 0.0 Hz</span>
+                    </label>
+                </div>
+                <div class="connection-status" id="connection-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Connecting...</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="app-container">
+            <!-- Drawer -->
+            <aside class="drawer" id="drawer">
+                <div class="drawer-header">
+                    <span>Nodes</span>
+                    <button class="drawer-rediscover-btn" id="drawer-rediscover-btn" title="Re-scan for new nodes">↻</button>
+                </div>
+                <div class="drawer-content" id="drawer-content">
+                    <!-- Panels will be rendered here by drawer.js -->
+                </div>
+            </aside>
+            
+            <!-- Node Editor -->
+            <main class="node-editor" id="node-editor">
+                <div class="node-editor-grid"></div>
+                <div class="node-canvas" id="node-canvas">
+                    <!-- Nodes and connections will be rendered here -->
+                </div>
+            </main>
+        </div>
+        
+        <!-- Zoom Controls -->
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoom-in" title="Zoom In">+</button>
+            <span class="zoom-level" id="zoom-level">100%</span>
+            <button class="zoom-btn" id="zoom-out" title="Zoom Out">−</button>
+            <button class="zoom-btn" id="zoom-reset" title="Reset View">⟲</button>
+        </div>
+        
+        <!-- Save Dialog (hidden by default) -->
+        <div class="save-dialog-overlay" id="save-dialog-overlay" style="display: none;">
+            <div class="save-dialog" id="save-dialog">
+                <h3>Save Workspace</h3>
+                <input type="text" id="save-dialog-input" placeholder="Enter workspace name..." class="save-dialog-input">
+                <div class="save-dialog-buttons">
+                    <button class="save-dialog-btn cancel" id="save-dialog-cancel">Cancel</button>
+                    <button class="save-dialog-btn save" id="save-dialog-save">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript Entry Point (ES6 Module) -->
+    <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

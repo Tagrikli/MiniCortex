@@ -1,0 +1,475 @@
+/**
+ * MiniCortex - Layout Styles
+ * 
+ * Main layout, flex containers, and app structure.
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   App Header
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    height: 56px;
+    z-index: 100;
+    position: relative;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.app-header h1 {
+    font-size: 1.2rem;
+    font-weight: 650;
+    color: var(--accent);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Workspace Dropdown
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.workspace-dropdown {
+    position: relative;
+}
+
+.workspace-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    background: var(--bg-node);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.workspace-dropdown-toggle:hover {
+    border-color: var(--accent);
+}
+
+.workspace-current-name {
+    flex: 1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.workspace-dropdown-arrow {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+}
+
+.workspace-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 2px;
+    min-width: 220px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 200;
+    display: none;
+}
+
+.workspace-dropdown.open .workspace-dropdown-menu {
+    display: block;
+}
+
+.workspace-dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.workspace-new-btn {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg-node);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.workspace-new-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.workspace-dropdown-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.workspace-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+}
+
+.workspace-dropdown-item:hover {
+    background: var(--bg-node);
+}
+
+.workspace-dropdown-item.active {
+    color: var(--accent);
+}
+
+.workspace-item-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.workspace-item-delete {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.7rem;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    opacity: 0;
+}
+
+.workspace-dropdown-item:hover .workspace-item-delete {
+    opacity: 1;
+}
+
+.workspace-item-delete:hover {
+    border-color: var(--error);
+    color: var(--error);
+}
+
+.workspace-dropdown-empty {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Save Dialog
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.save-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.save-dialog {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    min-width: 320px;
+}
+
+.save-dialog h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.save-dialog-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-node);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.save-dialog-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.save-dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.save-dialog-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    background: var(--bg-node);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.save-dialog-btn:hover {
+    border-color: var(--accent);
+}
+
+.save-dialog-btn.save {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.save-dialog-btn.save:hover {
+    opacity: 0.9;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.network-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.network-toggle-btn {
+    height: 28px;
+    padding: 0 0.7rem;
+    border: 1px solid var(--border);
+    background: var(--bg-node);
+    color: var(--text-primary);
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.network-iterate-btn {
+    height: 28px;
+    padding: 0 0.7rem;
+    border: 1px solid var(--border);
+    background: var(--bg-node);
+    color: var(--text-primary);
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+
+.network-toggle-btn.running {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.network-speed-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.network-speed-label {
+    white-space: nowrap;
+}
+
+#network-speed-slider {
+    width: 130px;
+    accent-color: var(--accent);
+}
+
+.network-speed-value {
+    width: 36px;
+    text-align: right;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.network-actual-value {
+    margin-left: 0.25rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    white-space: nowrap;
+    width: 80px;
+    text-align: right;
+    display: inline-block;
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--warning);
+}
+
+.status-dot.connecting {
+    background: var(--warning);
+}
+
+.status-dot.connected {
+    background: var(--success);
+}
+
+.status-dot.disconnected {
+    background: var(--accent);
+}
+
+.status-text {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Main Layout with Drawer
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.app-container {
+    display: flex;
+    height: calc(100vh - 56px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Node Editor Canvas
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.node-editor {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-primary);
+    cursor: grab;
+}
+
+.node-editor.grabbing {
+    cursor: grabbing;
+}
+
+.node-editor.connecting {
+    cursor: crosshair;
+}
+
+/* Grid background */
+.node-editor-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image: 
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+        linear-gradient(var(--grid-color-major) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color-major) 1px, transparent 1px);
+    background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+    opacity: 0.5;
+}
+
+/* Canvas container for transformations */
+.node-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Zoom Controls
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.zoom-controls {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.25rem;
+    background: var(--bg-secondary);
+    padding: 0.25rem;
+    border-radius: 0;
+    border: 1px solid var(--border);
+    z-index: 50;
+}
+
+.zoom-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: var(--bg-node);
+    color: var(--text-primary);
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zoom-btn:hover {
+    background: var(--accent);
+}
+
+.zoom-level {
+    padding: 0 0.5rem;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    min-width: 40px;
+    justify-content: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Responsive
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .drawer {
+        width: 180px;
+    }
+    
+    .network-speed-label {
+        display: none;
+    }
+    
+    #network-speed-slider {
+        width: 64px;
+    }
+    
+    .zoom-controls {
+        bottom: 0.5rem;
+        right: 0.5rem;
+    }
+}

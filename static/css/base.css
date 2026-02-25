@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/**
+ * MiniCortex - Base Styles
+ * 
+ * CSS variables, reset, and base body styles.
+ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CSS Variables
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+    /* Background Colors */
+    --bg-primary: #0b0f1a;
+    --bg-secondary: #11172a;
+    --bg-node: #141c2f;
+    --bg-node-header: #19213a;
+    --bg-drawer: #0f1526;
+    
+    /* Text Colors */
+    --text-primary: #e6f1ff;
+    --text-secondary: #8fa4ff;
+    
+    /* Accent Colors */
+    --accent: #00f5ff;
+    --accent-hover: #7cfffe;
+    
+    /* UI Colors */
+    --border: #26324d;
+    --success: #32ff9a;
+    --warning: #ffd400;
+    
+    /* Port Colors */
+    --input-port: #3dff6f;
+    --output-port: #ff4dff;
+    
+    /* Grid Colors */
+    --grid-color: #141a2a;
+    --grid-color-major: #1c2742;
+    
+    /* Layout */
+    --drawer-width: 220px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Reset
+   ───────────────────────────────────────────────────────────────────────────── */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: none !important;
+    animation: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Body
+   ───────────────────────────────────────────────────────────────────────────── */
+
+body {
+    font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+    background: radial-gradient(1200px 600px at 20% 10%, rgba(0, 245, 255, 0.08), transparent 60%),
+                radial-gradient(1000px 700px at 80% 0%, rgba(255, 77, 255, 0.08), transparent 55%),
+                var(--bg-primary);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Selection
+   ───────────────────────────────────────────────────────────────────────────── */
+
+::selection {
+    background: var(--accent);
+    color: white;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Scrollbar
+   ───────────────────────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Focus Styles
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
