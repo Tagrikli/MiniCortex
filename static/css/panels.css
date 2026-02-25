@@ -81,11 +81,19 @@
     font-size: 0.62rem;
     padding: 0 0.35rem;
     border-radius: 0;
+    -moz-appearance: textfield;
 }
 
 .property-number:focus {
     border-color: var(--accent);
     outline: none;
+}
+
+/* Hide native spinner arrows for webkit browsers */
+.property-number::-webkit-inner-spin-button,
+.property-number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -149,6 +157,76 @@
 .property-radio .radio-option.selected {
     background: var(--accent);
     border-color: var(--accent);
+    color: white;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Enum Property (Custom Dropdown)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.property-enum-container {
+    position: relative;
+    width: 100%;
+}
+
+.property-enum-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 22px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.62rem;
+    padding: 0 0.5rem;
+    cursor: pointer;
+}
+
+.property-enum-header:hover {
+    border-color: var(--accent);
+}
+
+.enum-selected-value {
+    flex: 1;
+}
+
+.enum-arrow {
+    font-size: 0.5rem;
+    color: var(--text-secondary);
+    margin-left: 0.5rem;
+}
+
+.property-enum-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-top: none;
+    z-index: 100;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.property-enum-options.open {
+    display: block;
+}
+
+.enum-option {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.62rem;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.enum-option:hover {
+    background: var(--bg-node);
+}
+
+.enum-option.selected {
+    background: var(--accent);
     color: white;
 }
 

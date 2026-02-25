@@ -61,20 +61,4 @@ class Display(BaseDescriptor):
         setattr(obj, f"_{self.name}", value)
 
 
-class Action(BaseDescriptor):
-    """Base for action descriptors (trigger callbacks)."""
-    def __init__(self, label: str, callback: str):
-        super().__init__(label)
-        self.callback = callback
 
-    def __get__(self, obj, objtype=None):
-        if obj is None:
-            return self
-        callback = getattr(obj, self.callback, None)
-        if callable(callback):
-            return callback
-        return lambda params=None: None
-
-    def to_spec(self, value: Any = None) -> dict:
-        """Override in subclasses."""
-        raise NotImplementedError

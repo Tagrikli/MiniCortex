@@ -2,8 +2,9 @@ from typing import Any, Dict, Optional
 import json
 import numpy as np
 
-from .descriptors.base import Property, Display, Action
+from .descriptors.base import Property, Display
 from .descriptors.ports import InputPort, OutputPort
+from .descriptors.actions import Action
 from .descriptors.store import Store
 from .registry import get_connections_for_node
 

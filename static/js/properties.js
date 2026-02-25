@@ -24,14 +24,17 @@ export function renderProperties(node) {
     
     const propertiesHtml = node.properties.map(prop => {
         switch (prop.type) {
-            case 'slider':
-                return renderSlider(node.node_id, prop);
+            case 'range':
+            case 'slider': // Legacy support
+                return renderRange(node.node_id, prop);
             case 'integer':
                 return renderInteger(node.node_id, prop);
-            case 'checkbox':
-                return renderCheckbox(node.node_id, prop);
-            case 'radio':
-                return renderRadio(node.node_id, prop);
+            case 'bool':
+            case 'checkbox': // Legacy support
+                return renderBool(node.node_id, prop);
+            case 'enum':
+            case 'dropdown': // Legacy support
+                return renderEnum(node.node_id, prop);
             default:
                 return '';
         }
@@ -41,18 +44,19 @@ export function renderProperties(node) {
 }
 
 /**
- * Render a slider property
+ * Render a range property
  * @param {string} nodeId - Node ID
  * @param {Object} prop - Property definition
  * @returns {string} HTML string
  */
-export function renderSlider(nodeId, prop) {
+export function renderRange(nodeId, prop) {
     const value = prop.value !== undefined ? prop.value : prop.default;
     const displayValue = formatValue(value, prop.scale);
     const useLog = prop.scale === 'log' && prop.min > 0 && prop.max > 0;
     const sliderMin = useLog ? Math.log10(prop.min) : prop.min;
     const sliderMax = useLog ? Math.log10(prop.max) : prop.max;
     const sliderValue = useLog ? Math.log10(value) : value;
+    const step = prop.step || (prop.scale === 'log' ? 'any' : '0.01');
     
     return `
         <div class="property-group">
@@ -67,8 +71,8 @@ export function renderSlider(nodeId, prop) {
                    min="${sliderMin}" 
                    max="${sliderMax}" 
                    value="${sliderValue}"
-                   step="${prop.scale === 'log' ? 'any' : '0.01'}"
-                   oninput="window.onSliderChange(this)">
+                   step="${step}"
+                   oninput="window.onRangeChange(this)">
         </div>
     `;
 }
@@ -104,17 +108,17 @@ export function renderInteger(nodeId, prop) {
 }
 
 /**
- * Render a checkbox property
+ * Render a bool property
  * @param {string} nodeId - Node ID
  * @param {Object} prop - Property definition
  * @returns {string} HTML string
  */
-export function renderCheckbox(nodeId, prop) {
+export function renderBool(nodeId, prop) {
     const checked = prop.value !== undefined ? prop.value : prop.default;
     
     return `
         <div class="property-group">
-            <div class="property-checkbox" onclick="window.onCheckboxClick('${nodeId}', '${prop.key}')">
+            <div class="property-checkbox" onclick="window.onBoolChange('${nodeId}', '${prop.key}')">
                 <div class="checkbox ${checked ? 'checked' : ''}" 
                      data-node="${nodeId}" 
                      data-property="${prop.key}"></div>
@@ -125,20 +129,20 @@ export function renderCheckbox(nodeId, prop) {
 }
 
 /**
- * Render a radio button group property
+ * Render an enum property
  * @param {string} nodeId - Node ID
  * @param {Object} prop - Property definition
  * @returns {string} HTML string
  */
-export function renderRadio(nodeId, prop) {
+export function renderEnum(nodeId, prop) {
     const selected = prop.value !== undefined ? prop.value : prop.default;
     
     const options = prop.options.map(opt => `
-        <div class="radio-option ${opt === selected ? 'selected' : ''}"
+        <div class="enum-option ${opt === selected ? 'selected' : ''}"
              data-node="${nodeId}"
              data-property="${prop.key}"
              data-value="${opt}"
-             onclick="window.onRadioClick(this)">
+             onclick="window.onEnumOptionClick(this)">
             ${opt}
         </div>
     `).join('');
@@ -148,8 +152,17 @@ export function renderRadio(nodeId, prop) {
             <div class="property-label">
                 <span>${prop.label}</span>
             </div>
-            <div class="property-radio">
-                ${options}
+            <div class="property-enum-container">
+                <div class="property-enum-header"
+                     data-node="${nodeId}"
+                     data-property="${prop.key}"
+                     onclick="window.onEnumHeaderClick(this)">
+                    <span class="enum-selected-value">${selected}</span>
+                    <span class="enum-arrow">▼</span>
+                </div>
+                <div class="property-enum-options">
+                    ${options}
+                </div>
             </div>
         </div>
     `;
@@ -160,10 +173,10 @@ export function renderRadio(nodeId, prop) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Handle slider value change
+ * Handle range value change
  * @param {HTMLInputElement} slider - Slider element
  */
-export async function onSliderChange(slider) {
+export async function onRangeChange(slider) {
     const nodeId = slider.dataset.node;
     const propKey = slider.dataset.property;
     let value = parseFloat(slider.value);
@@ -201,11 +214,11 @@ export async function onIntegerChange(input) {
 }
 
 /**
- * Handle checkbox click
+ * Handle bool change
  * @param {string} nodeId - Node ID
  * @param {string} propKey - Property key
  */
-export async function onCheckboxClick(nodeId, propKey) {
+export async function onBoolChange(nodeId, propKey) {
     const checkbox = document.querySelector(`.checkbox[data-node="${nodeId}"][data-property="${propKey}"]`);
     const checked = !checkbox.classList.contains('checked');
     
@@ -216,22 +229,62 @@ export async function onCheckboxClick(nodeId, propKey) {
 }
 
 /**
- * Handle radio option click
- * @param {HTMLElement} element - Radio option element
+ * Handle enum header click (toggle dropdown)
+ * @param {HTMLElement} header - Enum header element
  */
-export async function onRadioClick(element) {
-    const nodeId = element.dataset.node;
-    const propKey = element.dataset.property;
-    const value = element.dataset.value;
+export function onEnumHeaderClick(header) {
+    const container = header.closest('.property-enum-container');
+    const options = container.querySelector('.property-enum-options');
+    const isOpen = options.classList.contains('open');
+    
+    // Close all other dropdowns
+    document.querySelectorAll('.property-enum-options.open').forEach(el => {
+        el.classList.remove('open');
+    });
+    
+    if (!isOpen) {
+        options.classList.add('open');
+    }
+}
+
+/**
+ * Handle enum option click
+ * @param {HTMLElement} option - Enum option element
+ */
+export async function onEnumOptionClick(option) {
+    const nodeId = option.dataset.node;
+    const propKey = option.dataset.property;
+    const value = option.dataset.value;
     
     // Update UI
-    const siblings = element.parentElement.querySelectorAll('.radio-option');
-    siblings.forEach(s => s.classList.remove('selected'));
-    element.classList.add('selected');
+    const container = option.closest('.property-enum-container');
+    const header = container.querySelector('.property-enum-header');
+    const selectedValue = header.querySelector('.enum-selected-value');
+    const options = container.querySelector('.property-enum-options');
+    
+    // Update selected value display
+    selectedValue.textContent = value;
+    
+    // Update selected state
+    options.querySelectorAll('.enum-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.value === value);
+    });
+    
+    // Close dropdown
+    options.classList.remove('open');
     
     // Send to server
     await setProperty(nodeId, propKey, value);
 }
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.property-enum-container')) {
+        document.querySelectorAll('.property-enum-options.open').forEach(el => {
+            el.classList.remove('open');
+        });
+    }
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Actions Rendering
@@ -275,9 +328,10 @@ export async function onActionClick(nodeId, actionKey) {
 
 // Register handlers on window for inline event handlers
 if (typeof window !== 'undefined') {
-    window.onSliderChange = onSliderChange;
-    window.onCheckboxClick = onCheckboxClick;
-    window.onRadioClick = onRadioClick;
+    window.onRangeChange = onRangeChange;
+    window.onBoolChange = onBoolChange;
+    window.onEnumHeaderClick = onEnumHeaderClick;
+    window.onEnumOptionClick = onEnumOptionClick;
     window.onActionClick = onActionClick;
     window.onIntegerChange = onIntegerChange;
 }

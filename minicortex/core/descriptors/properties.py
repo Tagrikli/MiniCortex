@@ -1,20 +1,23 @@
 from typing import Any, Callable, List, Optional, Union
 from .base import Property
 
-class Slider(Property):
-    """Numeric property descriptor with min/max bounds."""
+
+class Range(Property):
+    """Numeric range property descriptor with min/max bounds."""
     def __init__(
         self,
         label: str,
         default: float,
         min_val: float,
         max_val: float,
+        step: float = 0.01,
         scale: str = "linear",
         on_change: Union[str, Callable, None] = None,
     ):
         super().__init__(label, default, on_change)
         self.min_val = min_val
         self.max_val = max_val
+        self.step = step
         self.scale = scale
 
     def validate(self, value):
@@ -25,12 +28,13 @@ class Slider(Property):
 
     def to_spec(self, value: Any = None) -> dict:
         return {
-            "type": "slider",
+            "type": "range",
             "label": self.label,
             "default": self.default,
             "value": value if value is not None else self.default,
             "min": self.min_val,
             "max": self.max_val,
+            "step": self.step,
             "scale": self.scale,
         }
 
@@ -72,21 +76,21 @@ class Integer(Property):
         }
 
 
-class CheckBox(Property):
+class Bool(Property):
     """Boolean property descriptor."""
     def __init__(self, label: str, default: bool = False, on_change: Union[str, Callable, None] = None):
         super().__init__(label, default, on_change)
 
     def to_spec(self, value: Any = None) -> dict:
         return {
-            "type": "checkbox",
+            "type": "bool",
             "label": self.label,
             "default": self.default,
             "value": value if value is not None else self.default,
         }
 
 
-class RadioButtons(Property):
+class Enum(Property):
     """Enum selection property descriptor."""
     def __init__(self, label: str, options: List[str], default: str, on_change: Union[str, Callable, None] = None):
         super().__init__(label, default, on_change)
@@ -98,7 +102,7 @@ class RadioButtons(Property):
 
     def to_spec(self, value: Any = None) -> dict:
         return {
-            "type": "radio",
+            "type": "enum",
             "label": self.label,
             "options": self.options,
             "default": self.default,

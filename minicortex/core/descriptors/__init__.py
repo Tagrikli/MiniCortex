@@ -1,5 +1,7 @@
-from .base import BaseDescriptor, Property, Display, Action
+from .base import BaseDescriptor, Property, Display
 from .ports import InputPort, OutputPort
+from .properties import Range, Integer, Bool, Enum
+from .actions import Action
 from .store import Store
 from .dynamic import dynamic
 from .node import (
@@ -19,6 +21,10 @@ __all__ = [
     "Action",
     "InputPort",
     "OutputPort",
+    "Range",
+    "Integer",
+    "Bool",
+    "Enum",
     "Store",
     "dynamic",
     "node",
