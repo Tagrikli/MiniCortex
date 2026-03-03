@@ -45,25 +45,15 @@ class Integer(Property):
         self,
         label: str,
         default: int = 0,
-        min_val: Optional[int] = None,
-        max_val: Optional[int] = None,
         on_change: Union[str, Callable, None] = None,
     ):
         super().__init__(label, int(default), on_change)
-        self.min_val = min_val
-        self.max_val = max_val
 
     def validate(self, value):
         try:
-            int_value = int(value)
+            int(value)
         except (TypeError, ValueError):
             raise ValueError(f"{self.name} must be an integer, got {value}")
-        
-        if self.min_val is not None and int_value < self.min_val:
-            raise ValueError(f"{self.name} must be >= {self.min_val}, got {int_value}")
-            
-        if self.max_val is not None and int_value > self.max_val:
-            raise ValueError(f"{self.name} must be <= {self.max_val}, got {int_value}")
 
     def to_spec(self, value: Any = None) -> dict:
         return {
@@ -71,8 +61,31 @@ class Integer(Property):
             "label": self.label,
             "default": self.default,
             "value": value if value is not None else self.default,
-            "min": self.min_val,
-            "max": self.max_val,
+        }
+
+
+class Float(Property):
+    """Float property descriptor."""
+    def __init__(
+        self,
+        label: str,
+        default: float = 0.0,
+        on_change: Union[str, Callable, None] = None,
+    ):
+        super().__init__(label, float(default), on_change)
+
+    def validate(self, value):
+        try:
+            float(value)
+        except (TypeError, ValueError):
+            raise ValueError(f"{self.name} must be a float, got {value}")
+
+    def to_spec(self, value: Any = None) -> dict:
+        return {
+            "type": "float",
+            "label": self.label,
+            "default": self.default,
+            "value": value if value is not None else self.default,
         }
 
 

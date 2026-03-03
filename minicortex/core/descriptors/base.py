@@ -48,9 +48,10 @@ class Property(BaseDescriptor):
 
 class Display(BaseDescriptor):
     """Base for display-only output descriptors bound to instance variables."""
-    def __init__(self, label: str, default: Any = None):
+    def __init__(self, label: str, default: Any = None, on_change: Union[str, Callable, None] = None):
         super().__init__(label)
         self.default = default
+        self.on_change = on_change
 
     def __get__(self, obj, objtype=None):
         if obj is None:
@@ -59,6 +60,16 @@ class Display(BaseDescriptor):
 
     def __set__(self, obj, value):
         setattr(obj, f"_{self.name}", value)
+
+    def _trigger_change(self, obj, new_config: dict, old_config: dict):
+        """Trigger on_change callback when display config changes."""
+        on_change = self.on_change
+        if isinstance(on_change, str):
+            callback = getattr(obj, on_change, None)
+            if callable(callback):
+                callback(new_config, old_config)
+        elif callable(on_change):
+            on_change(obj, new_config, old_config)
 
 
 

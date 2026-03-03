@@ -2,9 +2,6 @@ from typing import List, Optional, Dict, Any, Tuple, Set
 import numpy as np
 import traceback
 
-from ..core.node import Node
-from ..core.registry import get_node, get_connections, get_all_nodes
-
 
 class NetworkError(Exception):
     """Exception raised when a node processing error occurs."""
@@ -15,23 +12,31 @@ class NetworkError(Exception):
         self.traceback = traceback_str
         super().__init__(f"Node '{node_name}' ({node_id}) error: {error}")
 
+from ..core.node import Node
+from ..core.registry import get_node, get_connections, get_all_nodes
+
 
 class Network:
     """Network manager that orchestrates computation between nodes."""
     
     def __init__(self):
         self.running = False
-        self.speed = 10
+        self.speed = 60
         self._step_count = 0
         self._signals_now: Dict[Tuple[str, str], Any] = {}
         self.last_error: Optional[NetworkError] = None
+        self.failed_nodes: Set[str] = set()  # Track nodes that failed processing
     
-    def start(self): 
+    def start(self):
         self.running = True
         self.last_error = None  # Clear error on start
     
-    def stop(self): 
+    def stop(self):
         self.running = False
+    
+    def clear_failed_nodes(self) -> None:
+        """Clear the set of failed nodes."""
+        self.failed_nodes.clear()
     
     def execute_step(self) -> Dict[str, Any]:
         """
@@ -66,9 +71,12 @@ class Network:
             # Process the node (with error handling)
             try:
                 node_outputs = self._process_node_once(node)
+                # Clear this node from failed nodes if it succeeded
+                self.failed_nodes.discard(node_id)
             except Exception as e:
                 # Stop the network on error
                 self.running = False
+                self.failed_nodes.add(node_id)  # Track the failed node
                 self.last_error = NetworkError(
                     node_id=node_id,
                     node_name=node.name,
@@ -150,7 +158,18 @@ class Network:
                 if not target_node: continue
                 
                 self._set_node_inputs(target_node, incoming.get(target_node_id, {}))
-                node_outputs = self._process_node_probe(target_node)
+                try:
+                    node_outputs = self._process_node_probe(target_node)
+                    self.failed_nodes.discard(target_node_id)  # Clear error on success
+                except Exception as e:
+                    self.failed_nodes.add(target_node_id)  # Track failed node
+                    self.last_error = NetworkError(
+                        node_id=target_node_id,
+                        node_name=target_node.name,
+                        error=e,
+                        traceback_str=traceback.format_exc()
+                    )
+                    raise self.last_error
                 processed.add(target_node_id); updated_nodes.add(target_node_id)
                 
                 for output_key, value in node_outputs.items():
@@ -180,7 +199,18 @@ class Network:
         if recompute_start:
             start_node = nodes_by_id[node_id]
             self._set_node_inputs(start_node, incoming.get(node_id, {}))
-            start_outputs = self._process_node_probe(start_node)
+            try:
+                start_outputs = self._process_node_probe(start_node)
+                self.failed_nodes.discard(node_id)  # Clear error on success
+            except Exception as e:
+                self.failed_nodes.add(node_id)  # Track failed node
+                self.last_error = NetworkError(
+                    node_id=node_id,
+                    node_name=start_node.name,
+                    error=e,
+                    traceback_str=traceback.format_exc()
+                )
+                raise self.last_error
             processed.add(node_id); updated_nodes.add(node_id)
             for output_key, value in start_outputs.items():
                 self._signals_now[(node_id, output_key)] = self._clone_signal(value)
@@ -194,7 +224,18 @@ class Network:
                 if not target_node: continue
                 
                 self._set_node_inputs(target_node, incoming.get(target_node_id, {}))
-                target_outputs = self._process_node_probe(target_node)
+                try:
+                    target_outputs = self._process_node_probe(target_node)
+                    self.failed_nodes.discard(target_node_id)  # Clear error on success
+                except Exception as e:
+                    self.failed_nodes.add(target_node_id)  # Track failed node
+                    self.last_error = NetworkError(
+                        node_id=target_node_id,
+                        node_name=target_node.name,
+                        error=e,
+                        traceback_str=traceback.format_exc()
+                    )
+                    raise self.last_error
                 processed.add(target_node_id); updated_nodes.add(target_node_id)
                 
                 for output_key, value in target_outputs.items():
@@ -205,7 +246,11 @@ class Network:
     
     def get_step_count(self) -> int: return self._step_count
     
-    def reset(self): self._step_count = 0; self.running = False; self._signals_now = {}
+    def reset(self):
+        self._step_count = 0
+        self.running = False
+        self._signals_now = {}
+        self.failed_nodes.clear()
 
     def _set_node_inputs(self, node: Node, incoming_ports: Dict[str, Tuple[str, str]]) -> None:
         """

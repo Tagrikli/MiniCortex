@@ -90,5 +90,8 @@ def get_connections_for_node(node_id: str) -> List[dict]:
 
 def get_node_class(node_type: str):
     """Get a node class by type name."""
-    from ..server.state import get_node_classes
-    return get_node_classes().get(node_type)
+    from .descriptors.node import get_all_node_classes
+    for cls in get_all_node_classes():
+        if cls.__name__ == node_type:
+            return cls
+    return None

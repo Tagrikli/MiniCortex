@@ -85,7 +85,7 @@ class Node(metaclass=NodeMeta):
     """
     
     # Set to True in subclasses to enable hot-reload functionality
-    dynamic: bool = False
+    dynamic: bool = True
     
     def __init__(self, x: float = 0, y: float = 0):
         self.node_id: Optional[str] = None
@@ -157,6 +157,7 @@ class Node(metaclass=NodeMeta):
             "name": self.name,
             "position": self.position,
             "dynamic": getattr(self.__class__, "dynamic", False),
+            "category": getattr(self.__class__, "_node_branch", ""),
             "input_ports": input_ports,
             "output_ports": output_ports,
             "properties": properties,
