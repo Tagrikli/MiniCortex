@@ -196,6 +196,7 @@ class NodeQuickAddPopup(QWidget):
         self._flat_nodes = self._build_flat_nodes(node_palette)
         self._root_cascade: Optional[_CascadeCategoryPopup] = None
         self._event_filter_installed = False
+        self._selection_emitted = False
 
         root_layout = QVBoxLayout(self)
         root_layout.setContentsMargins(8, 8, 8, 8)
@@ -443,6 +444,9 @@ class NodeQuickAddPopup(QWidget):
         self._on_node_selected(node_type)
 
     def _on_node_selected(self, node_type: str) -> None:
+        if self._selection_emitted:
+            return
+        self._selection_emitted = True
         self.node_selected.emit(node_type)
         self.close()
 
