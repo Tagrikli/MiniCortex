@@ -9,4 +9,5 @@ wheels/
 # Virtual environments
 .venv
 data/mnist/
+data/cifar10/
 workspaces/

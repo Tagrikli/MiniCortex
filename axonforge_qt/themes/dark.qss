@@ -1,0 +1,500 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   AxonForge Dark Theme — QSS Stylesheet
+   Matches the web UI's cyberpunk dark aesthetic.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Global ─────────────────────────────────────────────────────────────── */
+
+QWidget {
+    background: #0b0f1a;
+    color: #e6f1ff;
+    font-family: "Space Grotesk", "Segoe UI", sans-serif;
+    font-size: 15px;
+    border: none;
+}
+
+QWidget:focus {
+    outline: none;
+}
+
+/* ─── Main Window ────────────────────────────────────────────────────────── */
+
+QMainWindow {
+    background: #0b0f1a;
+}
+
+QMainWindow::separator {
+    background: #26324d;
+    width: 1px;
+    height: 1px;
+}
+
+/* ─── Header Bar ─────────────────────────────────────────────────────────── */
+
+QWidget#header_bar {
+    background: #11172a;
+    border-bottom: 1px solid #26324d;
+    min-height: 56px;
+    max-height: 56px;
+}
+
+QWidget#header_bar[running="true"] {
+    background: #1a2a4a;
+    border-bottom: 1px solid #00f5ff;
+}
+
+QWidget#header_bar QPushButton {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    font-size: 0.8em;
+    padding: 2px 6px;
+}
+
+QWidget#header_bar QPushButton:hover {
+    border-color: #00f5ff;
+    color: #00f5ff;
+}
+
+QLabel#app_title {
+    color: #00f5ff;
+    font-size: 0.93em;
+    font-weight: 600;
+    background: transparent;
+}
+
+QLabel#workspace_label {
+    color: #a9b7d9;
+    font-size: 0.73em;
+    background: transparent;
+    padding: 0 2px;
+}
+
+/* ─── Network Controls ───────────────────────────────────────────────────── */
+
+QPushButton#network_toggle {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    padding: 4px 12px;
+    font-size: 0.73em;
+    min-height: 24px;
+}
+
+QPushButton#network_toggle:hover {
+    border-color: #00f5ff;
+}
+
+QPushButton#network_toggle[running="true"] {
+    background: #00f5ff;
+    border-color: #00f5ff;
+    color: #0b0f1a;
+}
+
+QPushButton#network_iterate {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    padding: 4px 12px;
+    font-size: 0.73em;
+    min-height: 24px;
+}
+
+QPushButton#network_iterate:hover {
+    border-color: #00f5ff;
+}
+
+QSpinBox#network_speed_input {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    min-width: 72px;
+    min-height: 24px;
+    padding: 2px 6px;
+    font-size: 0.73em;
+}
+
+QSpinBox#network_speed_input:disabled {
+    color: #6f7d9d;
+    border-color: #1b253a;
+}
+
+QCheckBox#network_max_speed_checkbox {
+    color: #8fa4ff;
+    font-size: 0.73em;
+    spacing: 6px;
+    background: transparent;
+}
+
+QCheckBox#network_max_speed_checkbox::indicator {
+    width: 12px;
+    height: 12px;
+    border: 1px solid #26324d;
+    background: #11172a;
+}
+
+QCheckBox#network_max_speed_checkbox::indicator:checked {
+    border-color: #00f5ff;
+    background: #00f5ff;
+}
+
+QLabel#speed_label, QLabel#actual_hz {
+    color: #8fa4ff;
+    font-size: 0.73em;
+    background: transparent;
+}
+
+QLabel#actual_hz {
+    min-width: 70px;
+    font-size: 0.93em;
+    font-weight: 600;
+}
+
+/* ─── Workspace Dropdown ─────────────────────────────────────────────────── */
+
+QComboBox#workspace_combo {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    padding: 4px 8px;
+    font-size: 0.73em;
+    min-width: 140px;
+    min-height: 24px;
+}
+
+QComboBox#workspace_combo::drop-down {
+    border: none;
+    width: 18px;
+}
+
+QComboBox#workspace_combo::down-arrow {
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid #8fa4ff;
+    margin-right: 6px;
+}
+
+QComboBox QAbstractItemView {
+    background: #11172a;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    selection-background-color: #141c2f;
+    selection-color: #00f5ff;
+    font-size: 0.73em;
+}
+
+/* ─── Drawer (Node Palette) ──────────────────────────────────────────────── */
+
+QWidget#palette_panel {
+    background: #0f1526;
+    border-right: 1px solid #26324d;
+}
+
+QWidget#palette_header {
+    background: #0f1526;
+    border-bottom: 1px solid #26324d;
+}
+
+QTreeWidget#palette_tree {
+    background: #0f1526;
+    border: none;
+    color: #e6f1ff;
+    font-size: 0.67em;
+    outline: 0;
+}
+
+QTreeWidget#palette_tree::item {
+    padding: 4px 6px;
+    border: none;
+    margin: 0;
+    min-height: 30px;
+}
+
+QTreeWidget#palette_tree::item:hover {
+    background: #19213a;
+    border: 1px solid #00f5ff;
+}
+
+QTreeWidget#palette_tree::branch {
+    background: transparent;
+}
+
+QTreeWidget#palette_tree::branch:closed:has-children,
+QTreeWidget#palette_tree::branch:open:has-children {
+    image: none;
+}
+
+QLabel#palette_header {
+    color: #8fa4ff;
+    font-size: 0.73em;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    border-bottom: 1px solid #26324d;
+}
+
+QPushButton#rediscover_btn {
+    background: transparent;
+    border: 1px solid #26324d;
+    color: #8fa4ff;
+    font-size: 0.8em;
+    padding: 2px 6px;
+}
+
+QPushButton#rediscover_btn:hover {
+    border-color: #00f5ff;
+    color: #00f5ff;
+}
+
+QPushButton#new_workspace_btn {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    font-size: 0.8em;
+}
+
+QPushButton#new_workspace_btn:hover {
+    border-color: #00f5ff;
+    color: #00f5ff;
+}
+
+/* Category headers in palette */
+QPushButton.palette_category {
+    background: #11172a;
+    border: none;
+    border-bottom: 1px solid #26324d;
+    color: #e6f1ff;
+    font-size: 0.67em;
+    font-weight: 600;
+    padding: 6px 10px;
+    text-align: left;
+}
+
+QPushButton.palette_category:hover {
+    background: #141c2f;
+}
+
+/* Node items in palette */
+QFrame.palette_item {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    padding: 5px 8px;
+    margin: 2px 6px;
+}
+
+QFrame.palette_item:hover {
+    border-color: #00f5ff;
+    background: #19213a;
+}
+
+/* Palette Tree Widget */
+QTreeWidget {
+    background: #0f1526;
+    border: none;
+    color: #e6f1ff;
+    font-size: 0.67em;
+    outline: 0;
+}
+
+QTreeWidget::item {
+    padding: 4px 6px;
+    border: none;
+    margin: 0;
+    min-height: 30px;
+}
+
+QTreeWidget::item:hover {
+    background: #19213a;
+    border: 1px solid #00f5ff;
+}
+
+QTreeWidget::branch {
+    background: transparent;
+}
+
+QLabel.palette_title {
+    color: #8fa4ff;
+    font-size: 0.73em;
+    font-weight: 600;
+}
+
+QLabel.palette_item_icon {
+    font-size: 0.6em;
+    font-weight: 600;
+    min-width: 18px;
+    max-width: 18px;
+    min-height: 18px;
+    max-height: 18px;
+    qproperty-alignment: AlignCenter;
+}
+
+QLabel.palette_item_name {
+    color: #e6f1ff;
+    font-size: 0.67em;
+}
+
+/* ─── Zoom Controls ──────────────────────────────────────────────────────── */
+
+QWidget#zoom_controls {
+    background: #11172a;
+    border: 1px solid #26324d;
+}
+
+QPushButton#zoom_in_btn, QPushButton#zoom_out_btn, QPushButton#zoom_reset_btn {
+    background: #141c2f;
+    border: none;
+    color: #e6f1ff;
+    font-size: 0.87em;
+    min-width: 26px;
+    min-height: 26px;
+    max-width: 26px;
+    max-height: 26px;
+}
+
+QPushButton#zoom_in_btn:hover, QPushButton#zoom_out_btn:hover, QPushButton#zoom_reset_btn:hover {
+    background: #00f5ff;
+    color: #0b0f1a;
+}
+
+QPushButton.zoom_btn {
+    background: #141c2f;
+    border: none;
+    color: #e6f1ff;
+    font-size: 0.87em;
+    min-width: 26px;
+    min-height: 26px;
+    max-width: 26px;
+    max-height: 26px;
+}
+
+QPushButton.zoom_btn:hover {
+    background: #00f5ff;
+    color: #0b0f1a;
+}
+
+QLabel#zoom_level {
+    color: #8fa4ff;
+    font-size: 0.6em;
+    min-width: 36px;
+    qproperty-alignment: AlignCenter;
+}
+
+/* ─── Scrollbars ─────────────────────────────────────────────────────────── */
+
+QScrollBar:vertical {
+    background: #0b0f1a;
+    width: 8px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #26324d;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #8fa4ff;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar:horizontal {
+    background: #0b0f1a;
+    height: 8px;
+    margin: 0;
+}
+
+QScrollBar::handle:horizontal {
+    background: #26324d;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #8fa4ff;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+
+/* ─── Save Dialog ────────────────────────────────────────────────────────── */
+
+QDialog#save_dialog {
+    background: #11172a;
+    border: 1px solid #26324d;
+}
+
+QDialog#save_dialog QLabel {
+    color: #e6f1ff;
+    font-size: 0.87em;
+}
+
+QDialog#save_dialog QLineEdit {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    padding: 6px 8px;
+    font-size: 0.8em;
+}
+
+QDialog#save_dialog QLineEdit:focus {
+    border-color: #00f5ff;
+}
+
+QDialog#save_dialog QPushButton {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    padding: 5px 14px;
+    font-size: 0.73em;
+}
+
+QDialog#save_dialog QPushButton:hover {
+    border-color: #00f5ff;
+}
+
+QDialog#save_dialog QPushButton#save_btn {
+    background: #00f5ff;
+    border-color: #00f5ff;
+    color: #0b0f1a;
+}
+
+QDialog#save_dialog QPushButton#save_btn:hover {
+    opacity: 0.9;
+}
+
+/* ─── Context Menu ───────────────────────────────────────────────────────── */
+
+QMenu {
+    background: #11172a;
+    border: 1px solid #26324d;
+    padding: 4px 0;
+    font-size: 0.67em;
+}
+
+QMenu::item {
+    padding: 5px 16px;
+    color: #e6f1ff;
+}
+
+QMenu::item:selected {
+    background: #141c2f;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #26324d;
+    margin: 3px 0;
+}
+
+/* ─── Tooltips ───────────────────────────────────────────────────────────── */
+
+QToolTip {
+    background: #141c2f;
+    border: 1px solid #26324d;
+    color: #e6f1ff;
+    font-size: 0.67em;
+    padding: 3px 6px;
+}

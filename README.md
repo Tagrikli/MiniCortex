@@ -1,405 +1,288 @@
 <p align="center">
-  <img src="data/media_github/minicortex.png" alt="MiniCortex" width="720">
+  <img src="data/media_github/axonforge.png" alt="AxonForge" width="720">
 </p>
 
-<h1 align="center">MiniCortex</h1>
+<h1 align="center">AxonForge</h1>
 
 <p align="center">
   <strong>A node-based computational framework with a PySide6 visual editor</strong>
 </p>
 
 <p align="center">
-  <em>Define modular computational units in Python, wire them together in a desktop editor, and watch them run — live.</em>
+  <em>Define computational nodes in Python, connect them visually, and run the graph live.</em>
 </p>
 
 ---
 
 ## Overview
 
-MiniCortex is a **node-based simulation framework** paired with a **real-time PySide6 visual editor**. It lets you define computational units as modular Python classes, connect them into directed graphs, execute them with topologically-ordered signal propagation, and observe their internal states updating live in the desktop application — all without writing any UI code.
+AxonForge is a desktop node editor and runtime for building computational graphs.
 
-What defines MiniCortex:
+Core ideas:
 
-- **Declarative node definition** — a Python descriptor API where inputs, outputs, properties, displays, actions, and persistent stores are declared as class attributes. No boilerplate; everything is accessed as `self.attribute_name`.
-- **Live visual editor** — a PySide6 desktop canvas with drag-and-drop node composition, interactive property controls, and real-time 2D/1D array visualization rendered directly inside each node.
-- **Topological execution engine** — a network runtime that sorts nodes by dependency (Kahn's algorithm), propagates signals in tick-based steps, and handles feedback cycles by using previous-tick values.
-- **Hot-reloadable nodes** — all nodes support hot-reloading by default. Edit a node's Python source on disk and reload it in the running editor. State is preserved, invalid connections are pruned, and `init()` is called fresh.
-- **Workspace persistence** — save and load entire graph configurations (nodes, connections, state, viewport) as JSON files, enabling reproducible experiments and session continuity.
-
----
-
-## Key Concepts
-
-### Nodes
-
-A **Node** is the fundamental computational unit. Each node defines:
-
-| Concept | Description |
-|---|---|
-| **Input Ports** | Typed connection points that receive data from upstream nodes |
-| **Output Ports** | Typed connection points that send data to downstream nodes |
-| **Properties** | Interactive parameters (sliders, integers, checkboxes, dropdowns) adjustable from the UI |
-| **Displays** | Visual outputs rendered inside the node (2D/1D arrays, numeric values, text) |
-| **Actions** | Buttons that trigger callbacks on the node instance |
-| **Stores** | Persistent internal state variables that survive workspace save/load and hot-reload |
-
-Nodes are defined as Python classes inheriting from `Node`, using a **descriptor-based declarative API**:
-
-```python
-import numpy as np
-from minicortex.core.node import Node
-from minicortex.core.descriptors.ports import InputPort, OutputPort
-from minicortex.core.descriptors.properties import Range, Integer, Bool, Enum
-from minicortex.core.descriptors.displays import Vector2D, Vector1D, Numeric, Text
-from minicortex.core.descriptors.actions import Action
-from minicortex.core.descriptors.store import Store
-from minicortex.core.descriptors import branch
-
-@branch("Processing")
-class EdgeDetector(Node):
-    """Applies a Sobel-like edge detection kernel to a 2D input."""
-
-    # Ports — typed connection points
-    input_image  = InputPort("Image", np.ndarray)
-    output_edges = OutputPort("Edges", np.ndarray)
-
-    # Properties — interactive controls in the UI
-    threshold   = Range("Threshold", 0.3, 0.0, 1.0)
-    kernel_size = Integer("Kernel Size", default=3, min_val=3, max_val=7)
-    invert      = Bool("Invert", default=False)
-    mode        = Enum("Mode", options=["fast", "accurate"], default="fast")
-
-    # Displays — live visualizations rendered inside the node
-    preview    = Vector2D("Preview", color_mode="grayscale")
-    histogram  = Vector1D("Edge Histogram")
-    edge_ratio = Numeric("Edge %", format=".1f")
-    info       = Text("Status", default="Waiting for input")
-
-    # Actions — buttons that call methods
-    reset = Action("Reset Stats", callback="_on_reset")
-
-    # Stores — persistent state that survives save/load and hot-reload
-    frame_count = Store(default=0)
-
-    def init(self):
-        """Called once after registration."""
-        self.frame_count = 0
-
-    def process(self):
-        """Called each network tick. Read inputs, compute, set outputs."""
-        if self.input_image is None:
-            return
-
-        img = self.input_image.astype(np.float64)
-        # Simple Sobel-like gradient magnitude
-        gx = np.diff(img, axis=1, prepend=img[:, :1])
-        gy = np.diff(img, axis=0, prepend=img[:1, :])
-        magnitude = np.sqrt(gx**2 + gy**2)
-        magnitude /= magnitude.max() + 1e-9
-
-        # Apply threshold
-        edges = (magnitude > float(self.threshold)).astype(np.float64)
-        if self.invert:
-            edges = 1.0 - edges
-
-        self.frame_count += 1
-        self.output_edges = edges
-        self.preview = edges
-        self.histogram = magnitude.mean(axis=0)
-        self.edge_ratio = 100.0 * edges.mean()
-        self.info = f"Frame {self.frame_count}"
-
-    def _on_reset(self, params):
-        self.frame_count = 0
-        return {"status": "ok"}
-```
-
-All descriptor values are accessed directly as `self.attribute_name` — no boilerplate getters or setters.
-
-### Node Categories
-
-Nodes are organized into categories via the `@branch` decorator that auto-registers them in the UI palette:
-
-```python
-@branch("Input")           # Input nodes (data sources, generators)
-@branch("Processing")      # Processing nodes (algorithms, learning rules)
-@branch("Utilities")       # Utility nodes (transforms, displays, arithmetic)
-@branch("Output")          # Output nodes (data sinks, exporters)
-@branch("Custom/Category") # Hierarchical categories
-```
-
-### Network Execution
-
-The **Network** engine processes the node graph using **Kahn's algorithm** for topological sorting, ensuring that:
-
-- **Feedforward** inputs are always fresh (computed in the current tick).
-- **Feedback** connections (cycles) receive values from the previous tick (t−1).
-- Signals are cloned (numpy arrays are copied) to prevent aliased mutation.
-- Any node error halts execution, broadcasts a detailed traceback to the UI, and highlights the offending node.
-
-Execution can be:
-- **Started/Stopped** — continuous loop at a configurable Hz (1–300 Hz).
-- **Single-stepped** — advance exactly one tick for precise debugging.
-- **Speed-controlled** — slider in the UI sets the target tick rate; actual Hz is measured and displayed.
-
-### Hot Reload
-
-All nodes support **hot-reloading at runtime**. When you click the reload button (↻) in the node header:
-1. The Python module is reloaded from disk.
-2. A new instance is created with the updated class definition.
-3. **Store values** and **Property values** are preserved.
-4. Invalid connections (referencing removed ports) are cleaned up.
-5. `init()` is called fresh on the new instance.
-
-This enables a tight edit → reload → observe loop without restarting the editor.
-
-### Workspaces
-
-The workspace system provides full session persistence:
-
-- **Save** — serializes all nodes (type, position, properties, stores), connections, and viewport state to a JSON file.
-- **Load** — deserializes and reconstructs the entire graph, restoring node state including numpy arrays stored via `Store`.
-- **Clear** — resets to an empty canvas.
-- **Workspace management** — save, load, and delete workspaces through the UI.
+- Declarative node classes using descriptors (`InputPort`, `OutputPort`, `Range`, `Store`, etc.)
+- Real-time PySide6 graph editor
+- Topological network execution with runtime error reporting
+- Project-based persistence (`project.json` + `data/` array files)
+- Hot reload for dynamic nodes
 
 ---
 
-## Architecture
+## Core Capabilities
 
-```
-MiniCortex
-├── minicortex/                 # Python backend
-│   ├── core/                   # Core framework
-│   │   ├── node.py             # Node base class + NodeMeta metaclass
-│   │   ├── registry.py         # Global node & connection registries
-│   │   └── descriptors/        # Declarative descriptor system
-│   │       ├── base.py         # Property, Display, Action base classes
-│   │       ├── ports.py        # InputPort, OutputPort descriptors
-│   │       ├── properties.py   # Range, Integer, Bool, Enum
-│   │       ├── displays.py     # Numeric, Vector1D, Vector2D, Text
-│   │       ├── actions.py      # Action descriptor
-│   │       ├── store.py        # Store (persistent state) descriptor
-│   │       └── node.py         # @branch decorator + auto-discovery
-│   ├── network/
-│   │   └── network.py          # Topological execution engine
-│   └── nodes/                  # Built-in node implementations
-│       ├── input.py            # InputMovingShape, InputRotatingLine,
-│       │                       #   InputDigitMNIST, InputFashionMNIST, InputInteger
-│       ├── noise.py            # Noise generators
-│       ├── utilities.py        # AddNoise, Invert, DisplayGrayscale, DisplayBWR,
-│       │                       #   AddArrays, Duplicate, AddIntegers, MovingAverage2D
-│       └── cortex.py           # Cortical processing models
-├── minicortex_qt/              # PySide6 desktop interface
-│   ├── main.py                 # Application entry point
-│   ├── main_window.py          # Main window with menu, toolbar, canvas
-│   ├── bridge.py               # Bridge between backend and UI
-│   ├── computation_thread.py   # Background computation thread
-│   ├── canvas/                 # Canvas rendering components
-│   │   ├── editor_scene.py     # QGraphicsScene for node graph
-│   │   ├── editor_view.py      # QGraphicsView with pan/zoom
-│   │   ├── node_item.py        # Node UI representation
-│   │   ├── port_item.py        # Port UI representation
-│   │   └── connection_item.py  # Connection line rendering
-│   ├── panels/                 # Side panels
-│   │   └── palette.py          # Node palette panel
-│   ├── dialogs/                # Dialog windows
-│   │   └── save_workspace.py   # Workspace save/load dialogs
-│   └── themes/                 # UI themes
-│       └── dark.qss            # Dark theme stylesheet
-├── data/                       # Datasets and media
-│   └── media_github/           # Repository images
-└── utils/
-    └── download_mnist_datasets.py  # MNIST dataset download script
-```
+- **Project workflow**
+  - `File -> New Project`, `Load Project`, `Save Project`, `Recent Projects`
+  - project name derived from folder name
+- **Persistence**
+  - graph, properties, stores, viewport, and editor UI state are saved in project data
+  - numpy arrays are persisted in `data/*.npy` and referenced from `project.json`
+- **Runtime**
+  - topological execution with single-step and continuous run modes
+  - configurable max Hz (`1..1000`) plus unthrottled `Max` mode
+- **Node lifecycle**
+  - optional process-based `@background_init` with loading overlay
+  - hot reload support for dynamic nodes
+- **Diagnostics**
+  - init/process errors shown both in console and directly on node UI
+- **Editor interaction**
+  - searchable quick-add (`Shift+A`) with cascading categories
+  - active/new node bring-to-front behavior
+  - connections are hover-highlighted and right-click deletable (not selectable)
+  - drawer/console resize preserves canvas screen position
 
 ---
 
-## Descriptor System
-
-The descriptor system is the backbone of node definition. Each descriptor type is a Python **data descriptor** that manages instance-level state via `__get__`/`__set__`, collected at class creation time by the `NodeMeta` metaclass.
-
-### Properties (Interactive Controls)
-
-```python
-# Continuous slider with optional log scale
-alpha = Range("Learning Rate", 0.01, 1e-5, 1.0, scale="log")
-
-# Integer input with optional bounds
-count = Integer("Count", default=10, min_val=1, max_val=100)
-
-# Boolean toggle
-enabled = Bool("Enabled", default=True)
-
-# Enum selection
-mode = Enum("Mode", options=["fast", "accurate"], default="fast")
-```
-
-All properties support an `on_change` callback (method name string or callable) that fires when the value changes.
-
-### Displays (Visual Outputs)
-
-```python
-# 2D array rendered as an image (grayscale or bwr colormap)
-heatmap = Vector2D("Weights", color_mode="grayscale")
-
-# 1D array rendered as a bar chart
-bars = Vector1D("Activations")
-
-# Scalar value with format string
-loss = Numeric("Loss", format=".4f")
-
-# Text string
-info = Text("Status", default="Ready")
-```
-
-Displays can be individually toggled on/off in the UI to reduce visual clutter.
-
-### Ports (Connections)
-
-```python
-# Typed input — accepts np.ndarray from upstream
-input_data = InputPort("Input", np.ndarray)
-
-# Typed output — sends int downstream
-output_value = OutputPort("Value", int)
-```
-
-Port type compatibility is checked when creating connections. The `"any"` type accepts any data.
-
-### Stores (Persistent State)
-
-```python
-# Persisted across save/load and hot-reload
-angle = Store(default=0.0)
-matrix = Store(default=None)
-```
-
-Store values are serialized to workspace JSON files (numpy arrays are converted to nested lists with a type marker for lossless round-tripping).
-
-### Actions (Buttons)
-
-```python
-# Renders a button in the node UI; calls the named method on click
-reinit = Action("Reinitialize", callback="_on_reinit")
-```
-
----
-
-## Getting Started
+## Installation
 
 ### Prerequisites
 
-- **Python ≥ 3.12**
-- **[uv](https://docs.astral.sh/uv/)** (recommended) or pip
+- Python 3.12+
+- Linux/macOS/Windows with Qt support for PySide6
 
-### Installation
+### Install
 
 ```bash
-# Clone the repository
 git clone https://github.com/your-username/MiniCortex.git
 cd MiniCortex
 
-# Install dependencies with uv
+# using uv
 uv sync
 
-# Or with pip
+# or using pip
 pip install -e .
 ```
 
-### Download Datasets (Optional)
+---
 
-To use the MNIST and Fashion-MNIST input nodes:
-
-```bash
-python utils/download_mnist_datasets.py
-```
-
-This downloads the IDX files to `data/mnist/mnist/` and `data/mnist/fashion-mnist/`.
-
-### Run
+## Run
 
 ```bash
-# With uv
-uv run python main.py
+# preferred module entry
+python -m axonforge_qt.main
 
-# Or directly
-python main.py
+# or installed script (from pyproject)
+axonforge-qt
 ```
 
-The PySide6 editor will launch with a dark theme by default.
+Startup log should end with:
 
-### Quick Start
-
-1. **Add nodes** — drag node types from the left-hand palette onto the canvas, or right-click for a context menu.
-2. **Connect nodes** — click and drag from an output port (right side) to an input port (left side) of another node.
-3. **Configure** — adjust sliders, integers, and other properties directly in the node body.
-4. **Run** — press **Start** (or `Ctrl+Space`) to begin continuous execution. Use **Step** (or `Ctrl+Return`) for single-step.
-5. **Observe** — watch 2D weight matrices, activation bar charts, loss values, and patterns update in real time.
-6. **Save** — use the workspace menu to save your graph for later.
-
-### Keyboard Shortcuts
-
-| Key | Action |
-|---|---|
-| `Ctrl+Space` | Toggle network start/stop |
-| `Ctrl+Return` | Single-step the network |
-| `Ctrl+S` | Save workspace |
-| Right-click | Delete selected node or connection |
-| Middle-drag (canvas) | Pan the viewport |
-| Scroll wheel | Zoom in/out (towards cursor) |
-| Left-drag (node header) | Move a node |
+```text
+AxonForge ready.
+```
 
 ---
 
-## Creating Custom Nodes
+## Quick Start
 
-Create a new Python file in `minicortex/nodes/` — it will be auto-discovered on startup.
+1. Create or load a project folder from the **File** menu.
+2. Add nodes:
+   - drag from drawer, or
+   - press `Shift+A` and search.
+3. Connect ports by drag.
+4. Set node properties in-node.
+5. Start network with `Ctrl+Space` or step with `Ctrl+Return`.
+6. Save project with `Ctrl+S`.
+
+---
+
+## Controls
+
+| Shortcut / Action | Behavior |
+|---|---|
+| `Ctrl+Space` | Start/stop network |
+| `Ctrl+Return` | Single network step |
+| `Ctrl+S` | Save project |
+| `Shift+A` | Open quick-add node picker |
+| `Shift+D` | Duplicate selected node(s) |
+| `Shift+R` | Toggle drawer |
+| `Shift+T` | Toggle console |
+| Right-click node | Delete node |
+| Right-click connection | Delete connection |
+| Mouse wheel | Zoom |
+| Middle mouse drag | Pan |
+
+---
+
+## Defining Nodes
+
+Nodes are normal Python classes inheriting from `Node`.
 
 ```python
-# minicortex/nodes/my_nodes.py
-
 import numpy as np
-from minicortex.core.node import Node
-from minicortex.core.descriptors.ports import InputPort, OutputPort
-from minicortex.core.descriptors.properties import Range
-from minicortex.core.descriptors.displays import Vector2D
-from minicortex.core.descriptors import branch
 
-@branch("Experimental")     # Custom category in the palette
-class MyNode(Node):
-    """A custom node that scales its input."""
+# Base node class and optional background init decorator
+from axonforge.core.node import Node, background_init
+# Category registration for palette/quick-add
+from axonforge.core.descriptors import branch
+# Connection endpoints
+from axonforge.core.descriptors.ports import InputPort, OutputPort
+# Editable parameters shown in node UI
+from axonforge.core.descriptors.properties import Range, Integer, Bool, Enum
+# Read-only output views shown in node UI
+from axonforge.core.descriptors.displays import Vector2D, Text
+# Button action descriptor
+from axonforge.core.descriptors.actions import Action
+# Persisted internal state (saved with project)
+from axonforge.core.descriptors.store import Store
 
-    input_data  = InputPort("Input", np.ndarray)
-    output_data = OutputPort("Output", np.ndarray)
-    scale       = Range("Scale", 1.0, 0.0, 10.0)
-    preview     = Vector2D("Preview", color_mode="grayscale")
 
+@branch("Demo/Examples")
+class ExampleNode(Node):
+    # Ports: receive/send graph data
+    x = InputPort("X", np.ndarray)
+    y = OutputPort("Y", np.ndarray)
+
+    # Properties: user-editable controls in the node
+    gain = Range("Gain", 1.0, 0.0, 5.0)
+    steps = Integer("Steps", 1)
+    enabled = Bool("Enabled", True)
+    mode = Enum("Mode", ["a", "b"], "a")
+
+    # Displays: visual outputs rendered in the node body
+    preview = Vector2D("Preview")
+    info = Text("Info", default="ready")
+
+    # Action button: calls _reset when clicked
+    reset = Action("Reset", callback="_reset")
+
+    # Store: persistent value saved/loaded with project
+    counter = Store(default=0)
+
+    # Optional: run in background worker process
+    @background_init
     def init(self):
-        pass
+        self.counter = 0
 
     def process(self):
-        if self.input_data is None:
+        if self.x is None or not self.enabled:
             return
-        result = self.input_data * float(self.scale)
-        self.output_data = result
-        self.preview = result
+        self.y = self.x * float(self.gain)
+        self.preview = self.y
+        self.counter += 1
+        self.info = f"ticks={self.counter}, mode={self.mode}"
+
+    def _reset(self, params=None):
+        self.counter = 0
 ```
 
-If the editor is already running, click the **↻** (rediscover) button in the palette to pick up the new node without restarting.
+Current workflow for custom nodes in this repo: place node files under `axonforge/nodes/...` and rediscover from the drawer refresh button.
 
 ---
 
-## Dependencies
+## Project File Format
 
-| Package | Purpose |
-|---|---|
-| **numpy** | Array computation and signal processing |
-| **PySide6** | Qt6-based desktop UI framework |
-| **python-mnist** | MNIST / Fashion-MNIST dataset loader |
-| **scikit-learn** | Machine learning utilities |
+Each project folder contains:
+
+- `project.json`
+- `data/` (for persisted arrays)
+
+`project.json` includes:
+
+```json
+{
+  "version": 4,
+  "kind": "project",
+  "project_name": "my_project",
+  "viewport": {
+    "pan": {"x": 12.3, "y": -45.6},
+    "zoom": 1.2
+  },
+  "editor": {
+    "drawer_collapsed": true,
+    "drawer_width": 260,
+    "console_collapsed": false,
+    "console_height": 220,
+    "max_hz_enabled": false,
+    "max_hz_value": 60
+  },
+  "nodes": [...],
+  "connections": [...]
+}
+```
+
+Arrays are stored as `.npy` and referenced from node data.
+
+---
+
+## Console and Logging
+
+- Console lines are prefixed with `<user>@<project> >` (or `!>` for error stream).
+- No per-line timestamp prefixing.
+- Multi-line tracebacks are colorized by line type.
+
+---
+
+## Caching and Config Paths
+
+- App config (recent projects): Qt GenericConfigLocation under `AxonForge/settings.json`
+- Dataset cache (MNIST preprocessed arrays): Qt GenericCacheLocation under `AxonForge/datasets/`
+
+---
+
+## Runtime Notes
+
+- Network execution uses topological ordering with cycle fallback semantics.
+- Signals are passed by reference (no defensive clone in runtime).
+  - Avoid in-place mutation of shared input objects unless intended.
+- Process errors stop the network and mark failing nodes.
+
+---
+
+## Architecture (Current)
+
+```text
+axonforge/
+  core/
+    node.py
+    registry.py
+    descriptors/
+  network/
+    network.py
+  nodes/
+    ... built-in node modules ...
+
+axonforge_qt/
+  main.py
+  main_window.py
+  bridge.py
+  computation_thread.py
+  canvas/
+  panels/
+  themes/
+```
+
+---
+
+## Roadmap Direction
+
+Planned direction discussed in development:
+
+- Keep AxonForge app/framework separate from user project code
+- Allow project-local custom node files loaded from project folders
+- Maintain stable SDK-style imports for user-authored nodes
 
 ---
 
 ## License
 
-This project is provided as-is for research and experimentation purposes.
+Provided as-is for research and experimentation.
